@@ -64,16 +64,17 @@ def download():
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download([video_url])
 
+        # Use dynamic host_url for Render compatibility
+        download_link = f"{request.host_url}downloads/{filename}".replace("http://", "https://")
+
         return jsonify({
             "success": True,
-           "download_url": f"{request.host_url}downloads/{filename}"
+            "download_url": download_link
         })
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
+
 @app.route('/downloads/<path:filename>')
 def serve_file(filename):
     return send_from_directory('downloads', filename, as_attachment=True)
-
-if __name__ == '__main__':
-    app.run(debug=True)
