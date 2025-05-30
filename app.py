@@ -1,80 +1,70 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import yt_dlp as youtube_dl
+import yt_dlp
 import os
 from werkzeug.utils import secure_filename
-
-# Ensure downloads folder exists
-os.makedirs("downloads", exist_ok=True)
 
 app = Flask(__name__)
 CORS(app)
 
+DOWNLOAD_DIR = 'downloads'
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+
 @app.route('/video_info', methods=['POST'])
 def video_info():
-    data = request.get_json()
-    video_url = data.get('video_url')
-
+    video_url = request.json.get('video_url')
     if not video_url:
         return jsonify({"success": False, "message": "No URL provided"}), 400
 
     try:
-        with youtube_dl.YoutubeDL({'quiet': True}) as ydl:
+        with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
             info = ydl.extract_info(video_url, download=False)
-
-            desired_resolutions = [360, 480, 720, 1080]
-            available_resolutions = sorted(
-                list({f.get('height') for f in info['formats'] if f.get('height') in desired_resolutions}),
-                reverse=True
-            )
-
+            resolutions = sorted({f.get('height') for f in info['formats'] if f.get('height')}, reverse=True)
             return jsonify({
                 "success": True,
-                "title": info.get("title", "Video"),
+                "title": info.get("title"),
                 "thumbnail": info.get("thumbnail"),
-                "resolutions": available_resolutions
+                "resolutions": resolutions
             })
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
-
 @app.route('/download', methods=['POST'])
 def download():
     data = request.get_json()
-    video_url = data.get('video_url')
-    resolution = data.get('resolution', 'best')
+    url = data.get('video_url')
+    resolution = str(data.get('resolution', 'best'))
 
-    if not video_url:
+    if not url:
         return jsonify({"success": False, "message": "No URL provided"}), 400
 
     try:
-        with youtube_dl.YoutubeDL({'quiet': True}) as ydl:
-            info = ydl.extract_info(video_url, download=False)
+        with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
+            info = ydl.extract_info(url, download=False)
             title = secure_filename(info.get("title", "video"))
             filename = f"{title}_{resolution}p.mp4"
 
-        format_code = f"bestvideo[height<={resolution}]+bestaudio/best[height<={resolution}]" if resolution != "best" else "best"
+        format_code = f"bestvideo[height<={resolution}]+bestaudio/best" if resolution != 'best' else 'best'
 
         ydl_opts = {
             'format': format_code,
-            'outtmpl': f'downloads/{filename}',
-            'noplaylist': True
+            'outtmpl': f'{DOWNLOAD_DIR}/{filename}',
+            'noplaylist': True,
+            'quiet': True
         }
 
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([video_url])
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
 
-        # Use dynamic host_url for Render compatibility
-        download_link = f"{request.host_url}downloads/{filename}".replace("http://", "https://")
-
+        host_url = request.host_url.rstrip('/')
         return jsonify({
             "success": True,
-            "download_url": download_link
+            "download_url": f"{host_url}/downloads/{filename}"
         })
+
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
-
 @app.route('/downloads/<path:filename>')
 def serve_file(filename):
-    return send_from_directory('downloads', filename, as_attachment=True)
+    return send_from_directory(DOWNLOAD_DIR, filename, as_attachment=True)
