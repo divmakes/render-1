@@ -1,9 +1,167 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Flask App</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Downloader</title>
+  <link rel="stylesheet" href="../static/css/styles.css">
 </head>
 <body>
-    <h1>Hello from Flask on Render!</h1>
+<!-- Add this inside your <body> -->
+<header class="site-header">
+  <div class="logo-container">
+    <img src="../static/images/yt logg.png" alt="YTGrabber Logo" class="logo">
+    <span class="site-name">UtubeSave</span>
+    <!-- Dark Mode Toggle -->
+<button id="themeToggle" class="theme-toggle">🌙</button>
+
+  </div>
+</header>
+
+  <main class="bgsize">
+  <div class="download-section scroll-fade">
+    <h2>Download Your Video</h2>
+    <h3>Paste the link below and download YouTube videos for free</h3>
+
+    <form class="download-form scroll-fade" onsubmit="event.preventDefault();">
+      <div class="input-container">
+      <input type="text" id="video-url" class="fade-in-input" placeholder="Paste YouTube video URL" required>
+
+        <button type="button" class="paste-btn scroll-fade" onclick="pasteLink()">📋</button>
+      </div>
+
+      <div id="loader" class="spinner scroll-fade" style="display: none;"></div>
+      <div id="message" style="margin-top: 10px;"></div>
+    </form>
+
+    <div id="videoInfo" style="display: none; margin-top: 15px;">
+      <img id="thumbnail" src="" alt="Thumbnail" style="width: 200px; border-radius: 10px;" />
+      <h3 id="videoTitle"></h3>
+      <p>Select resolution:</p>
+
+      <div class="res-buttons" id="resolutionButtons" style="display: none;">
+        <button id="res-360" class="res-btn scroll-fade">360p</button>
+        <button id="res-480" class="res-btn scroll-fade">480p</button>
+        <button id="res-720" class="res-btn scroll-fade">720p</button>
+        <button id="res-1080" class="res-btn scroll-fade">1080p</button>
+
+        <!-- Red Download Button -->
+        <button id="downloadBtn" style="display: none; margin-top: 10px; background-color: red; color: white;">Download</button>
+      </div>
+  </main>
+
+<div class="divbox">
+  <section id="text1">
+    <p>Welcome to our platform where you can easily download YouTube videos with just one click.</p>
+    <p>Our tool is fast, free, and works on any device. No sign-up or installation needed!</p>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features-section">
+    <div class="features-grid">
+      <div class="feature-box scroll-fade" id="feature-free">
+        <img src="../static/images/free.png" alt="Free Icon" class="feature-icon">
+        <h3 class="feature-title">100% Free to Use</h3>
+        <p class="feature-desc">No subscriptions, no fees, no catches—our service is entirely free and open for everyone to enjoy, now and forever.</p>
+      </div>
+
+      <div class="feature-box scroll-fade" id="feature-fast">
+        <img src="../static/images/flash.png" alt="Fast Icon" class="feature-icon">
+        <h3 class="feature-title">Lightning-Fast Retrieval</h3>
+        <p class="feature-desc">Experience near-instant downloads, as we process and deliver your requested files in mere seconds.</p>
+      </div>
+
+      <div class="feature-box scroll-fade" id="feature-custom-1">
+        <img src="../static/images/highfive.png" alt="Custom Icon" class="feature-icon">
+        <h3 class="feature-title">User-Friendly Interface</h3>
+        <p class="feature-desc">Navigate and use our platform with ease, thanks to a clean and intuitive interface built for everyone.</p>
+      </div>
+
+      <div class="feature-box scroll-fade" id="feature-custom-2">
+        <img src="../static/images/round.png" alt="Custom Icon" class="feature-icon">
+        <h3 class="feature-title">No Registration Required</h3>
+        <p class="feature-desc">Access all features instantly without needing to sign up or log in—hassle-free experience.</p>
+      </div>
+
+      <div class="feature-box scroll-fade" id="feature-custom-3">
+        <img src="../static/images/thumbs up.png" alt="Custom Icon" class="feature-icon">
+        <h3 class="feature-title">Secure & Private</h3>
+        <p class="feature-desc">Your privacy matters. We never store or share your data—what you download stays yours.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<section class="three-steps-section scroll-fade">
+  <h2 class="steps-title">Download in 3 Simple Steps</h2>
+  <div class="steps-container">
+
+    <div class="step-box">
+      <img src="../static/images/step1.png" alt="Step 1 Icon" class="step-icon">
+      <h3 class="step-title">1. Paste the Link</h3>
+      <p class="step-desc">Copy the URL of the YouTube video and paste it into the input box above.</p>
+    </div>
+
+    <div class="step-box">
+      <img src="../static/images/step2.png" alt="Step 2 Icon" class="step-icon">
+      <h3 class="step-title">2. Choose Resolution</h3>
+      <p class="step-desc">Select your preferred video quality: 360p, 480p, 720p, or 1080p.</p>
+    </div>
+
+    <div class="step-box">
+      <img src="../static/images/step3.png" alt="Step 3 Icon" class="step-icon">
+      <h3 class="step-title">3. Download Video</h3>
+      <p class="step-desc">Click the red download button and save the video to your device instantly.</p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- Why Use Us Section -->
+<section id="why-us-section">
+  <h2 class="why-title scroll-fade">Why Use Us?</h2>
+  <div class="qa-container scroll-fade">
+    <div class="qa-box scroll-fade">
+      <button class="qa-question">Is your service really free?</button>
+      <div class="qa-answer">
+        <p>Yes! Our platform is 100% free with no hidden charges or subscriptions required.</p>
+      </div>
+    </div>
+
+    <div class="qa-box">
+      <button class="qa-question">Do I need to sign up?</button>
+      <div class="qa-answer">
+        <p>No signup is needed. You can start using our service immediately—no registration or email required.</p>
+      </div>
+    </div>
+
+    <div class="qa-box">
+      <button class="qa-question">Is my data private?</button>
+      <div class="qa-answer">
+        <p>Absolutely. We dont track, store, or sell any personal information. Your privacy is our priority.</p>
+      </div>
+    </div>
+
+    <div class="qa-box">
+      <button class="qa-question">Can I access it anytime?</button>
+      <div class="qa-answer">
+        <p>Yes, our service is available 24/7 with no limits. Use it anytime you need.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2025 UtubeSave.com</p>
+  <p>This tool is for personal use only. We do not own or host any videos from YouTube.</p>
+  <p>We do not encourage downloading copyrighted content without permission. Use at your own risk.</p>
+  <p>
+    <a href="../templates/terms-of-use.html">Terms of Use</a> |
+    <a href="../templates/privacy-policy.html">Privacy Policy</a>
+  </p>
+</footer>
+<script src="../static/js/script.js"></script>
+
 </body>
 </html>
