@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Video Downloader</title>
-  <link rel="stylesheet" href="static/css/styles.css">
+  <link rel="stylesheet" href="../static/css/styles.css">
 </head>
 <body>
 <!-- Add this inside your <body> -->
@@ -23,7 +23,7 @@
     <h2>Download Your Video</h2>
     <h3>Paste the link below and download YouTube videos for free</h3>
 
-    <form class="download-form scroll-fade" onsubmit="event.preventDefault();">
+<form class="download-form scroll-fade" onsubmit="fetchVideoInfo(); return false;">
       <div class="input-container">
       <input type="text" id="video-url" class="fade-in-input" placeholder="Paste YouTube video URL" required>
 
@@ -161,7 +161,7 @@
     <a href="../templates/privacy-policy.html">Privacy Policy</a>
   </p>
 </footer>
-<script src="static/js/script.js"></script>
+<script src="/static/js/script.js"></script>
 
 </body>
 </html>
