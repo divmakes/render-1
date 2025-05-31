@@ -1,23 +1,22 @@
+function fetchVideoInfo() {
+  const videoUrl = document.getElementById("video-url").value.trim();
+  const videoInfo = document.getElementById("videoInfo");
+  const loader = document.getElementById("loader");
+  const message = document.getElementById("message");
+  const titleEl = document.getElementById("videoTitle");
+  const thumbEl = document.getElementById("thumbnail");
+  const btnContainer = document.getElementById("resolutionButtons");
 
-  function fetchVideoInfo() {
-    const videoUrl = document.getElementById("video-url").value.trim();
-    const videoInfo = document.getElementById("videoInfo");
-    const loader = document.getElementById("loader");
-    const message = document.getElementById("message");
-    const titleEl = document.getElementById("videoTitle");
-    const thumbEl = document.getElementById("thumbnail");
-    const btnContainer = document.getElementById("resolutionButtons");
+  message.textContent = "";
+  videoInfo.style.display = "none";
+  loader.style.display = "block";
+  btnContainer.style.display = "none";
 
-    message.textContent = "";
-    videoInfo.style.display = "none";
-    loader.style.display = "block";
-    btnContainer.style.display = "none";
-
-    fetch("http://127.0.0.1:5000/video_info", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ video_url: videoUrl })
-    })
+  fetch("/video_info", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ video_url: videoUrl })
+  })
     .then(res => res.json())
     .then(data => {
       loader.style.display = "none";
@@ -66,20 +65,20 @@
       message.textContent = "❌ Error: " + err.message;
       message.style.color = "red";
     });
-  }
+}
 
-  function startDownload(videoUrl, resolution) {
-    const loader = document.getElementById("loader");
-    const message = document.getElementById("message");
+function startDownload(videoUrl, resolution) {
+  const loader = document.getElementById("loader");
+  const message = document.getElementById("message");
 
-    loader.style.display = "block";
-    message.textContent = "";
+  loader.style.display = "block";
+  message.textContent = "";
 
-    fetch("http://127.0.0.1:5000/download", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ video_url: videoUrl, resolution: resolution })
-    })
+  fetch("/download", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ video_url: videoUrl, resolution: resolution })
+  })
     .then(res => res.json())
     .then(data => {
       loader.style.display = "none";
@@ -96,30 +95,30 @@
       message.textContent = "❌ Error: " + err.message;
       message.style.color = "red";
     });
-  }
+}
 
-  document.querySelectorAll('.qa-question').forEach(button => {
-    button.addEventListener('click', () => {
-      const answer = button.nextElementSibling;
-      const isOpen = answer.style.display === 'block';
-      document.querySelectorAll('.qa-answer').forEach(a => a.style.display = 'none');
-      answer.style.display = isOpen ? 'none' : 'block';
-    });
+document.querySelectorAll('.qa-question').forEach(button => {
+  button.addEventListener('click', () => {
+    const answer = button.nextElementSibling;
+    const isOpen = answer.style.display === 'block';
+    document.querySelectorAll('.qa-answer').forEach(a => a.style.display = 'none');
+    answer.style.display = isOpen ? 'none' : 'block';
   });
+});
 
-  function pasteLink() {
-    navigator.clipboard.readText()
-      .then(text => {
-        document.getElementById("video-url").value = text;
-        fetchVideoInfo(); // Automatically fetch when pasted
-      })
-      .catch(err => {
-        alert("Failed to access clipboard. Paste manually.");
-        console.error(err);
-      });
-  }
-  document.addEventListener("DOMContentLoaded", function () {
-  // Scroll fade effect setup
+function pasteLink() {
+  navigator.clipboard.readText()
+    .then(text => {
+      document.getElementById("video-url").value = text;
+      fetchVideoInfo(); // Automatically fetch when pasted
+    })
+    .catch(err => {
+      alert("Failed to access clipboard. Paste manually.");
+      console.error(err);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
   const scrollElements = document.querySelectorAll(".scroll-fade");
 
   const observer = new IntersectionObserver((entries, observer) => {
@@ -133,12 +132,10 @@
 
   scrollElements.forEach(el => observer.observe(el));
 
-  // Dark mode toggle setup
   const toggleBtn = document.getElementById("themeToggle");
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-  // Load saved preference or system default
   const savedTheme = localStorage.getItem("theme");
+
   if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
     document.documentElement.classList.add("dark-mode");
     toggleBtn.textContent = "☀️";
@@ -150,4 +147,3 @@
     toggleBtn.textContent = isDark ? "☀️" : "🌙";
   });
 });
-
